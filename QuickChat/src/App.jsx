@@ -1,13 +1,13 @@
 import { useState } from 'react'
-
+import Index from './Components/index.jsx'
 import './App.css'
 
 function App() {
 
   return (
     <>
-      <h1>Helo</h1>
-    </>
+      <Index/>
+    </>       
   )
 }
 
