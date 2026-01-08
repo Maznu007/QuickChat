@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ZIM } from "zego-zim-web";
 import ChatImg from "../assets/wechat.png";
 import logoutImg from "../assets/logout.png";
@@ -26,7 +26,80 @@ export default function Index() {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  return (
+  // Auto scroll to latest message
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
+  // Create ZIM instance only once
+  useEffect(() => {
+    const instance = ZIM.create(appId);
+    setZimInstance(instance);
+
+    instance.on("error", function (zim, errorInfo) {
+      console.log("error", errorInfo.code, errorInfo.message);
+    });
+
+    instance.on("connectionStateChanged", function (zim, { state, event }) {
+      console.log("connectionStateChanged", state, event);
+    });
+
+    instance.on("peerMessageReceived", function (zim, { messageList }) {
+      setMessages((prev) => [...prev, ...messageList]);
+    });
+
+    instance.on("tokenWillExpire", function (zim, { second }) {
+      console.log("tokenWillExpire", second);
+
+      const newToken = selectedUser === "Bacchu" ? tokenA : tokenB;
+
+      instance
+        .renewToken(newToken)
+        .then(function () {
+          console.log("Token renewed successfully");
+        })
+        .catch(function (err) {
+          console.error("Token renewal failed:", err);
+        });
+    });
+
+    return () => {
+      instance.destroy();
+    };
+    // NOTE: we intentionally do NOT add selectedUser here,
+    // because we don't want to recreate instance on every user change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+    useEffect(() => {
+      if (messageEndRef.current) {
+        messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    }, [messages]);
+    const handleLogin = () => {
+    const info ={
+      userID: selectedUser,
+      userName: selectedUser === "Bacchu" ? "Bacchu": "Rahul",
+    };
+    setUserInfo(info);
+    if(zimInstance){
+      const  loginToken =selectedUser === "Bacchu" ? tokenA : tokenB;
+      zimInstance.login(info,loginToken).then(function(){
+        setIsLoggedIn(true);
+        console.log("Login successful");
+      }).catch(function(err){
+        console.error("Login failed:", err);
+      });
+    }
+    else{
+      console.log("Instance Error");
+    }
+    }
+
+     
+
+ return (
   <div className="w-full h-screen bg-[#0D091B] flex items-center justify-center px-6 text-white relative">
     <div className="hero-bg"></div>
 
@@ -51,8 +124,20 @@ export default function Index() {
         encrypted and beautifully designed.
       </p>
     </div>
-        <div className="w-full lg:w-1/2"></div>
+        <div className="w-full lg:w-1/2">
+          {!isLoggedIn && (
+            <div className="w-100 p-8 rounded-2xl bg-[#0D091B]
+            backdrop-blur-2xl border border-white/20 shadow-xl">
+              <h2 className="text-4xl font-semibold mg-6 text-center text-white/90">Login</h2>
+              <label className="text-sm font-medium text-white/70">Select User</label>
+              <select value={selectedUser} onChange={(e)=>setSelectedUser(e.target.value)} className="w-full text-whiteborder px-4 py-2 rounded-xl mb-5 mt-1 border-gray-400 appearance-none focus:ring-2 focus:ring-purple-500 outline-none focus:border-purple-500 transition"  >
+                <option value="Bacchu" className="text-black">Bacchu</option>
+                <option value="Rahul" className="text-black">Rahul</option>
+              </select>
+              <button onClick={handleLogin } className="gradient-btn mt-5">Login as</button>
+            </div>
+          )}
+        </div>
   </div>
 );
-
 }
