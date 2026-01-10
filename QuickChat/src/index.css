@@ -3,43 +3,37 @@
 html, body, #root {
   height: 100%;
   margin: 0;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #f9f9f9;
+  color: #222;
 }
 
-.logo h1{
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+/* Custom Scrollbar */
+.chat-scroll::-webkit-scrollbar {
+  width: 8px;
 }
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+}
+
 .hero-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
+  display: none; /* no background overlay anymore */
 }
 
-.hero-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("./assets/Hero-bg.jpg");
-  background-size: cover;
-  background-position: center;
-  opacity: 0.5;
-  pointer-events: none;
+.gradient-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  font-size: 0.9rem;
+  transition: 0.2s ease-in-out;
 }
-
-.gradient-btn{
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #7c7c7c, #4f4f4f);
-    color: white;
-    font-size: 1.2rem;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    cursor: pointer;
+.gradient-btn:hover {
+  background: #444;
+  transform: translateY(-2px);
 }
-.gradient-btn:hover{
-    background: linear-gradient(90deg, #4f4f4f, #7c7c7c);
-    transform: translateY(-2px);
-  }
-  .gradient-btn:active{
-    transform: scale(0.97);
-  }
+.gradient-btn:active {
+  transform: scale(0.97);
+}
