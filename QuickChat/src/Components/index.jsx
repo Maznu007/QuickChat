@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ZIM } from "zego-zim-web";
 import LoginBox from "./LoginBox";
 import ChatWindow from "./ChatWindow";
+import { playSound } from "../playSound"; // 👈 new import
 
 export default function Index() {
   const [zimInstance, setZimInstance] = useState(null);
@@ -14,12 +15,12 @@ export default function Index() {
   const appId = 1332209682;
 
   const tokenA =
-    "04AAAAAGljZIYADIKWv8rI7GPF9QBHOgCxQJqPqZoxTA3DgjCNfIupNG0Y5JChYj2DFkK2Bpt8UPAbgYffvjhpA4iU4ITWId0EH+VxE9mQ2VRc4t4+JvGaSxxC+/vX0tDyoIUQcb1Gf5FORdUxR9bOfhq+49FDDl9nNJ/zUSZ1YrcqUbwBBv2XYsjkL89yg/PRDs5jTHH2umzOmTacVqousr+q8dxCKx8wLgfMK1c7vU7xEd8nmDdK05mWWmjemYZaCa5AlzqlOxMMAQ==";
+    "04AAAAAGlo01kADHYnOW1SRrY/GfKCVQCwbQ/niKQXUxalAb0TzkWSgRQ65WugmF89k7AOtvf84uAL/aXN+WF/oKkhHC4b/38F6Prs5D320ncfjth7flhzGEndUAJthiIQ4riMcGJhFiQVJNdg+w9gtbbihRXIl/YJiSX8rRD0qydbL/YNi9V9iUMT3IfiUauBkvm4xM364nr9tNjcxgyxHuKu/WMYtLDe9QX3/isRtxxOHTtg2h++Sc3V+TKD6p+C14IajUPAcd4B";
 
   const tokenB =
-    "04AAAAAGljZJsADJyN0D5qLPalpfRTVQCvY1AE0GqfcItYSktQZcnU2+r4E91e3hvRV5iXi0Wl6Lbcl2g+wu2D/itBUaOWBsx6jZLV1R/zgRPcXDJ5Nq6iebRWfxE8EhtgerlxBKOzE5FJ7YQzzDcRsV5CApFie/DbV9/YGxH7G7rlBsJuF249b1vrX0HubIb1garRqpStxto2lQg8n1Ud5cWc8UTa95xiwZSPGwkuQYeqQA5E6jfTAmDdSSfHSADpmOW/wHmWEAE=";
+    "04AAAAAGlo02gADKCBQypq8dlN73JsTQCw8jMK6/LyC0bvRk2Og/f33Vqy0Vvsx6afuFt1wCEvL8TAoGdi2pf5abS/2YCvmYPpsFYi4401dSJvNDsSSRPNQkd3GHGBUuU9Wurv4qvz+KILxiGYAxkmOgKjZzZKMQaPNZHxzaNad6/Pkv+ZCId8KCl9qkunXTjid0Lzauyl99JmS3PgJrEXKHnkjGxDx7ZeKvMV5n8XJThJcoJ9DqO2KClXRhitUGSEjHzKLiahCzIB";
 
-  useEffect(() => {
+    useEffect(() => {
     const instance = ZIM.create(appId);
     setZimInstance(instance);
 
@@ -29,6 +30,9 @@ export default function Index() {
 
     instance.on("peerMessageReceived", (zim, { messageList }) => {
       setMessages((prev) => [...prev, ...messageList]);
+
+      // 👇 Play receive sound
+      playSound("/sounds/receive.mp3");
     });
 
     instance.on("tokenWillExpire", (zim, { second }) => {
@@ -71,6 +75,9 @@ export default function Index() {
       .then(({ message }) => {
         setMessages((prev) => [...prev, message]);
         setMessageText("");
+
+        // 👇 Play send sound
+        playSound("/sounds/send.mp3");
       })
       .catch(console.error);
   };
